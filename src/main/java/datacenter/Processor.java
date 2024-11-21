@@ -13,10 +13,14 @@ public class Processor {
             jobs != null && jobs does not contain nulls
             && timeLimit > 0
             && (there should be something more that you should think about)
+
+            memory usage = the highest value of job.getMemoryUsage()
+
      */
 
     private List<Job> jobs;
     private int timeLimit;
+    private int memoryUsage = 0; // initialize to 0
 
     /**
      * Create a new empty processor
@@ -33,8 +37,16 @@ public class Processor {
      * @return true if adding the job does not exceed the time limit on this processor, and false otherwise.
      */
     public boolean canFitJob(Job job) {
-        // TODO: Implement this
-        return false;
+        int timeCount = 0;
+        for (Job currentJob : jobs) {
+            timeCount += currentJob.getExecutionTime();
+        }
+
+        if (timeCount + job.getExecutionTime() > this.timeLimit) {
+            return false;
+        }
+
+        return true;
     }
 
     /** Inserts a job to the processor, at the end of its schedule
@@ -43,7 +55,17 @@ public class Processor {
      * @return true if the job can fit on this processor and was assigned, and false otherwise
      */
     public boolean addJob(Job job) {
-        // TODO: Implement this
+        if (!canFitJob(job)) {
+            return false;
+        }
+
+        jobs.add(job);
+
+        // updates the memory usage
+        if (job.getMemoryUsage() > this.memoryUsage) {
+            this.memoryUsage = job.getMemoryUsage();
+        }
+
         return true;
     }
 
@@ -52,8 +74,7 @@ public class Processor {
      * @return the peak memory usage of the jobs ossigned to this processor
      * */
     public int getPeakMemoryUsage() {
-        // TODO: Implement this
-        return -1;
+        return this.memoryUsage;
     }
 
     /** Get the total computation (execution) time of this processor
@@ -62,8 +83,11 @@ public class Processor {
      * to this processor
      */
     public int getTotalComputationTime() {
-        // TODO: Implement this
-        return -1;
+        int totalExecutionTime = 0;
+        for (Job currentJob : jobs) {
+            totalExecutionTime += currentJob.getExecutionTime();
+        }
+        return totalExecutionTime;
     }
 
     /** Check if this processor is equal to a given processor
@@ -72,8 +96,40 @@ public class Processor {
      * in the same order, and they have the same time limit
      */
     public boolean equals(Processor that) {
-        // TODO: Implement this
-        return false;
+
+        // comparing to itself
+        if (this == that) {
+            return true;
+        }
+
+        if (that == null || getClass() != that.getClass()) {
+            return false;
+        }
+
+        Processor other = (Processor) that;
+
+        if (this.jobs.size() != that.jobs.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < jobs.size(); i++) {
+            Job thisJob = this.jobs.get(i);
+            Job thatjob = that.jobs.get(i);
+
+            if(!thisJob.equals(thatjob)) {
+                return false;
+            }
+        }
+
+        if (this.timeLimit != that.timeLimit) {
+            return false;
+        }
+
+        if (this.memoryUsage != that.memoryUsage) {
+            return false;
+        }
+
+        return true;
     }
 
     /** Get the time limit of this processor
@@ -89,7 +145,11 @@ public class Processor {
      * @return the jobs scheduled on this processor, in scheduled order
      */
     public Job[] getJobs() {
-        // TODO: Implement this method
-        return new Job[0];
+        int JOBSIZE = jobs.size();
+        Job [] jobsArray = new Job[JOBSIZE];
+        for (int i = 0; i < jobs.size(); i++) {
+            jobsArray[i] = jobs.get(i);
+        }
+        return jobsArray;
     }
 }

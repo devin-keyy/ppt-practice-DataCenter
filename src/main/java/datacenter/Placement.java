@@ -25,8 +25,11 @@ public class Placement {
      *  @return cost
      */
     public int getCost() {
-        // TODO: Implement this
-        return -1;
+        int costTotal = 0;
+        for (Processor currentProcessor : processors) {
+            costTotal += currentProcessor.getPeakMemoryUsage();
+        }
+        return costTotal;
     }
 
     /**
@@ -36,8 +39,13 @@ public class Placement {
      * (no processors or no jobs on any processor)
      */
     public int getMakeSpan() {
-        // TODO: Implement this
-        return -1;
+        int makespan = 0;
+        for (Processor currentProcessor : processors) {
+            if (currentProcessor.getTotalComputationTime() > makespan) {
+                makespan = currentProcessor.getTotalComputationTime();
+            }
+        }
+        return makespan;
     }
 
     /** Check if this placement is equal to another given placement
@@ -49,8 +57,29 @@ public class Placement {
      * (order of processors does matter)
      * */
     public boolean equals(Placement that) {
-        // TODO: Implement this
-        return false;
+        if (this == that) {
+            return true;
+        }
+
+        if (that == null || getClass() != that.getClass()) {
+            return false;
+        }
+
+        Placement other = (Placement) that;
+
+        if (this.processors.size() != that.processors.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < processors.size(); i++) {
+            Processor thisProcessor = this.processors.get(i);
+            Processor thatProcessor = that.processors.get(i);
+
+            if (!thisProcessor.equals(thatProcessor)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** Obtain the mean flow time for this placement
